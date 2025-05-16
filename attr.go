@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-type Attr struct {
+type Attr_ struct {
 	Name  string
 	Value any //string or interger
 }
 
-func (a Attr) Write(buf *bytes.Buffer) error {
+func (a *Attr_) Write(buf *bytes.Buffer) error {
 	_, err := buf.WriteString(a.Name)
 	if err != nil {
 		return err

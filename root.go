@@ -27,7 +27,6 @@ func (r *Root) IntentWrite(intent int, buf *bytes.Buffer) (err error) {
 		if err != nil {
 			return err
 		}
-		intent += 1
 	}
 
 	return r.Element.IntentWrite(intent, buf)

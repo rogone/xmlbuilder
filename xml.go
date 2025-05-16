@@ -1,9 +1,10 @@
 package xmlbuilder
 
 const (
-	WinNewLine   = "\r\n"
-	LinuxNewLine = "\n"
-	XmlNoIntent  = -1
+	WinNewLine    = "\r\n"
+	LinuxNewLine  = "\n"
+	XmlNoIntent   = -1
+	XmlWithIntent = 0
 )
 
 var (

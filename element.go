@@ -14,19 +14,19 @@ type Element struct {
 	IsSingleClosedTag bool
 	HasText           bool
 
-	Attrs      []Attr
+	Attrs      []Attr_
 	Text       any
 	SubElement []*Element
 }
 
 func (e *Element) IntentWrite(intent int, buf *bytes.Buffer) (err error) {
 	if intent > 0 {
-		_, err = buf.WriteString(NewLine)
+		err = e.writeNewLine(buf)
 		if err != nil {
 			return err
 		}
 
-		_, err = buf.Write(bytes.Repeat([]byte{XmlIntentChar}, intent*XmlIntentCount))
+		err = e.writeIntent(intent, buf)
 		if err != nil {
 			return err
 		}
@@ -72,22 +72,37 @@ func (e *Element) IntentWrite(intent int, buf *bytes.Buffer) (err error) {
 		}
 	}
 
+	subIntent := intent
 	if intent >= 0 {
-		intent += 1
+		subIntent += 1
 	}
 
 	for _, it := range e.SubElement {
-		err = it.IntentWrite(intent, buf)
+		err = it.IntentWrite(subIntent, buf)
 		if err != nil {
 			return err
 		}
 	}
 
-	return e.writeCloseTag(buf)
+	return e.writeCloseTag(intent, buf)
 
 }
 
-func (e *Element) writeCloseTag(buf *bytes.Buffer) (err error) {
+func (e *Element) writeCloseTag(intent int, buf *bytes.Buffer) (err error) {
+	if intent >= 0 && len(e.SubElement) > 0 {
+		err = e.writeNewLine(buf)
+		if err != nil {
+			return err
+		}
+
+		if intent > 0 {
+			err = e.writeIntent(intent, buf)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	_, err = buf.Write([]byte{'<', '/'})
 	if err != nil {
 		return err
@@ -122,6 +137,16 @@ func (e *Element) writeAttrs(buf *bytes.Buffer) (err error) {
 		}
 	}
 	return nil
+}
+
+func (e *Element) writeNewLine(buf *bytes.Buffer) (err error) {
+	_, err = buf.WriteString(NewLine)
+	return err
+}
+
+func (e *Element) writeIntent(intent int, buf *bytes.Buffer) (err error) {
+	_, err = buf.Write(bytes.Repeat([]byte{XmlIntentChar}, intent*XmlIntentCount))
+	return
 }
 
 func newElement(tagName string, ops ...Option) *Element {

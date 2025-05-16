@@ -15,9 +15,9 @@ func Text(text any) Option {
 	}
 }
 
-func AddAttr(name string, value any) Option {
+func Attr(name string, value any) Option {
 	return func(e *Element) {
-		e.Attrs = append(e.Attrs, Attr{
+		e.Attrs = append(e.Attrs, Attr_{
 			Name:  name,
 			Value: value,
 		})
